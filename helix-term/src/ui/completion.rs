@@ -1,5 +1,5 @@
 use crate::compositor::{Component, Context, EventResult};
-use crossterm::event::{Event, KeyCode, KeyEvent};
+use crossterm::event::{Event, KeyCode, KeyEvent, KeyModifiers};
 use helix_view::editor::CompleteAction;
 use tui::buffer::Buffer as Surface;
 
@@ -288,11 +288,15 @@ impl Completion {
 impl Component for Completion {
     fn handle_event(&mut self, event: Event, cx: &mut Context) -> EventResult {
         // let the Editor handle Esc instead
-        if let Event::Key(KeyEvent {
-            code: KeyCode::Esc, ..
-        }) = event
-        {
-            return EventResult::Ignored(None);
+        // https://github.com/helix-editor/helix/issues/822
+        // ctrl+c should also escape form insert mode
+        if let Event::Key(keyev) = event {
+            // I'm aware of ctrl!
+            // but that creates a view::KeyEvent we need crossterm
+            let ctrl_c = KeyEvent::new(KeyCode::Char('c'), KeyModifiers::CONTROL);
+            if keyev.code == KeyCode::Esc || keyev == ctrl_c {
+                return EventResult::Ignored(None);
+            }
         }
         self.popup.handle_event(event, cx)
     }
