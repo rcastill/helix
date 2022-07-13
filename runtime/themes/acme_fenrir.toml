@@ -1,0 +1,43 @@
+# Author: Two-Six<twopsix@duck.com>
+
+"ui.linenr" = {bg="acme_bg_darker",fg="gray"}
+
+"ui.window" = "gray"
+
+"ui.background" = {bg="acme_bg"}
+"ui.text" = "black"
+"ui.selection" = {bg="selected",fg="black"}
+"ui.statusline" = {bg="acme_bar_bg",fg="gray"}
+"ui.statusline.inactive" = {bg="acme_bar_inactive",fg="gray"}
+"ui.virtual" = "indent"
+"ui.popup" = {fg="black","bg"="acme_bg_darker"}
+"ui.popup.info" = {fg="black",bg="acme_bg_darker"}
+"ui.cursor.match" = {bg="acme_bar_bg"}
+"ui.cursor" = {bg="cursor", fg="white"}
+"string" = "red"
+"comment" = "green"
+"ui.menu" = {bg="acme_bg_darker",fg="black"}
+"ui.menu.selected" = {bg="selected",fg="black"}
+"diagnostic.error" = {bg="white", modifiers=["dim"]}
+"diagnostic.warning" = {bg="white", modifiers=["dim"]}
+"diagnostic.hint" = {bg="white", modifiers=["dim"]}
+
+warning = {bg="light_gray",fg="selected"}
+error = {bg="white",fg="red"}
+info = {bg="white",fg="red"}
+hint = {bg="light_gray",fg="selected"}
+
+[palette]
+white = "#ffffff"
+acme_bg = "#ffffea"
+acme_bg_darker = "#fcfcd9"
+black = "#000000"
+gray = "#2d2d2d"
+light_gray = "#6b6b6b"
+selected = "#eeee9e"
+acme_bar_bg = "#aeeeee"
+acme_bar_inactive = "#eaffff"
+cursor = "#444444"
+red = "#a0342f"
+green = "#065905"
+indent = "#aaaaaa"
