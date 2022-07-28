@@ -2,6 +2,7 @@ use arc_swap::{access::Map, ArcSwap};
 use futures_util::Stream;
 use helix_core::{
     config::{default_syntax_loader, user_syntax_loader},
+    diagnostic::NumberOrString,
     pos_at_coords, syntax, Selection,
 };
 use helix_lsp::{lsp, util::lsp_pos_to_pos, LspProgressMap};
@@ -151,10 +152,7 @@ impl Application {
                 compositor.push(Box::new(overlayed(picker)));
             } else {
                 let nr_of_files = args.files.len();
-                editor.open(first, Action::VerticalSplit)?;
-                // Because the line above already opens the first file, we can
-                // simply skip opening it a second time by using .skip(1) here.
-                for (file, pos) in args.files.into_iter().skip(1) {
+                for (i, (file, pos)) in args.files.into_iter().enumerate() {
                     if file.is_dir() {
                         return Err(anyhow::anyhow!(
                             "expected a path to file, found a directory. (to open a directory pass it as first argument)"
@@ -166,6 +164,7 @@ impl Application {
                         // option. If neither of those two arguments are passed
                         // in, just load the files normally.
                         let action = match args.split {
+                            _ if i == 0 => Action::VerticalSplit,
                             Some(Layout::Vertical) => Action::VerticalSplit,
                             Some(Layout::Horizontal) => Action::HorizontalSplit,
                             None => Action::Load,
@@ -350,7 +349,7 @@ impl Application {
     }
 
     fn refresh_config(&mut self) {
-        let config = Config::load(helix_loader::config_file()).unwrap_or_else(|err| {
+        let config = Config::load_default().unwrap_or_else(|err| {
             self.editor.set_error(err.to_string());
             Config::default()
         });
@@ -558,12 +557,24 @@ impl Application {
                                         }
                                     };
 
+                                    let code = match diagnostic.code.clone() {
+                                        Some(x) => match x {
+                                            lsp::NumberOrString::Number(x) => {
+                                                Some(NumberOrString::Number(x))
+                                            }
+                                            lsp::NumberOrString::String(x) => {
+                                                Some(NumberOrString::String(x))
+                                            }
+                                        },
+                                        None => None,
+                                    };
+
                                     Some(Diagnostic {
                                         range: Range { start, end },
                                         line: diagnostic.range.start.line as usize,
                                         message: diagnostic.message.clone(),
                                         severity,
-                                        // code
+                                        code,
                                         // source
                                     })
                                 })
